@@ -53,15 +53,15 @@ if options[:nomad_addr].to_s.size.zero?
   options[:nomad_addr] = 'http://localhost:4646'
 end
 
-@nomad_client = NomadClient.new(
+@nomad = NomadClient.new(
   address: options[:nomad_addr],
   token: options[:nomad_token]
-).client
+)
 
 loop do
-  volume_names = @nomad_client.volume_list(options[:nfs_plugin]).map(&:id)
+  volume_names = @nomad.volume_list(options[:nfs_plugin]).map(&:id)
   volume_names.each do |vol_name|
-    volume = @nomad_client.volume.read(vol_name)
+    volume = @nomad.client.volume.read(vol_name)
     mount_dir = volume.context.share
     unless Dir.exist?(mount_dir)
       @log.info("Create directory: #{mount_dir} for volume: #{vol_name}")

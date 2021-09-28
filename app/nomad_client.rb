@@ -13,9 +13,9 @@ class NomadClient
 
   def volume_list(nfs_plugins = [])
     if nfs_plugins.empty?
-      client.volume.list
+      Nomad.client.volume.list
     else
-      client.volume.list.select { |vol| nfs_plugins.include?(vol.plugin_id) }
+      Nomad.client.volume.list.select { |vol| nfs_plugins.include?(vol.plugin_id) }
     end
   end
 end
