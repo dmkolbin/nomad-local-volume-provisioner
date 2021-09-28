@@ -1,11 +1,8 @@
 #!/usr/bin/ruby
 
-require 'json'
 require 'optparse'
 require 'logger'
 require 'fileutils'
-require 'time'
-require_relative 'helpers/retry_helper'
 require_relative 'app/nomad_client'
 
 include RetryHelper
