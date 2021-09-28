@@ -26,7 +26,7 @@ begin
       options[:log_level] = level
     end
 
-    opts.on('--polling-rate <frequency>', String, 'Time in seconds between polling iterations') do |frequency|
+    opts.on('--polling-rate <frequency>', Integer, 'Time in seconds between polling iterations') do |frequency|
       options[:polling_rate] = frequency
     end
 
