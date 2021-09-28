@@ -28,7 +28,6 @@ begin
       options[:log_level] = level
     end
 
-    options[:polling_rate] = ENV['LOG_LEVEL'] || 'info'
     opts.on('--polling-rate <frequency>', String, 'Time in seconds between polling iterations') do |frequency|
       options[:polling_rate] = frequency
     end
@@ -69,7 +68,10 @@ loop do
   volume_names.each do |vol_name|
     volume = @nomad_client.volume.read(vol_name)
     mount_dir = volume.context.share
-    FileUtils.mkdir_p(mount_dir)
+    unless Dir.exist?(mount_dir)
+      @log.info("Create directory: #{mount_dir} for volume: #{vol_name}")
+      FileUtils.mkdir_p(mount_dir)
+    end
   end
 
   sleep(options[:polling_rate] || 5)
