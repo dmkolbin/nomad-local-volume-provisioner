@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ruby /opt/nomad-local-volume-provisioner/nomad-local-volume-provisioner.rb $@
