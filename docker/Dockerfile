@@ -1,6 +1,6 @@
 FROM ruby:2.6.6-buster
 
-ENV DOCKER_PATH="docker/nomad-local-volume-provisioner" \
+ENV DOCKER_PATH="docker" \
     WORKPATH="/opt/nomad-local-volume-provisioner" \
     BUNDLER_VERSION="2.1.4" \
     GEM_VERSION="3.1.4"
