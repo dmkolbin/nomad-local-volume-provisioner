@@ -5,8 +5,6 @@ require 'logger'
 require 'fileutils'
 require_relative 'app/nomad_client'
 
-include RetryHelper
-
 begin
   options = {}
   parser = OptionParser.new do |opts|
