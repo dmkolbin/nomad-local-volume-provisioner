@@ -90,7 +90,8 @@ loop do
     str = ''
     dir.split('/').reject(&:empty?).map { |path| str += "/#{path}" }
   end
-  expected_mounts.flatten!.uniq!
+  expected_mounts.flatten!
+  expected_mounts.uniq!
   expected_mounts.each do |mount_dir|
     next if Dir.exist?(mount_dir)
 
