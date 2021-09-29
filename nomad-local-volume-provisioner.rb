@@ -53,7 +53,7 @@ end
   begin
     Object.const_get("Logger::#{options[:log_level].upcase}")
   rescue NameError
-    @log.warn("Incorrect log level #{options[:log_level]}\nSet INFO log level")
+    @log.warn("Set INFO log level")
     Logger::INFO
   end
 
@@ -83,6 +83,7 @@ loop do
     else
       @log.debug("Volume: #{vol_name} mount to dir: #{mount_dir}")
     end
+    mount_dir
   end
 
   expected_mounts.select! { |em| em.to_s.split('/').size > 1 }
