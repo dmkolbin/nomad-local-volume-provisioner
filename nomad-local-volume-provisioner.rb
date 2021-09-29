@@ -5,6 +5,8 @@ require 'logger'
 require 'fileutils'
 require_relative 'app/nomad_client'
 
+DOCKER_STDOUT = '/proc/1/fd/1'.freeze
+
 begin
   options = {}
   options[:nomad_addr] = ENV['NOMAD_ADDR']
@@ -41,7 +43,7 @@ rescue OptionParser::MissingArgument => e
   exit 1
 end
 
-@log = Logger.new(STDOUT)
+@log = Logger.new(DOCKER_STDOUT)
 @log.level =
   begin
     Object.const_get("Logger::#{options[:log_level].upcase}")
