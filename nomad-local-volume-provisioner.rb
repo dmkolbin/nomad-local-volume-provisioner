@@ -92,6 +92,9 @@ loop do
   end
   expected_mounts.flatten!
   expected_mounts.uniq!
+  expected_mounts.sort_by(&:size)
+  @log.debug("Expected dirs: #{expected_mounts}")
+
   expected_mounts.each do |mount_dir|
     next if Dir.exist?(mount_dir)
 
