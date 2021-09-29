@@ -12,6 +12,7 @@ begin
   options[:nomad_addr] = ENV['NOMAD_ADDR']
   options[:nomad_token] = ENV['NOMAD_TOKEN']
   options[:nfs_plugins] ||= []
+  options[:mount_dirs] ||= []
 
   parser = OptionParser.new do |opts|
     opts.banner = 'Usage: ruby nomad-local-volume-provosioner.rb'
@@ -34,6 +35,10 @@ begin
 
     opts.on('--nfs-plugin <plugin_name>', String, 'NFS plugin name') do |plugin_name|
       options[:nfs_plugins] << plugin_name
+    end
+
+    opts.on('--main-mount-dir <mount_dir>', String, 'Main mount dir') do |mount_dir|
+      options[:mount_dirs] << mount_dir
     end
   end
 
@@ -69,21 +74,36 @@ loop do
 
   @log.debug("Volume names: #{volume_names}")
 
-  volume_names.each do |vol_name|
+  expected_mounts = volume_names.map do |vol_name|
     volume = @nomad.client.volume.read(vol_name)
     mount_dir = volume.context.share
 
     if mount_dir.nil?
       @log.debug("Not specified mount dir for #{vol_name}")
-      next
+    else
+      @log.debug("Volume: #{vol_name} mount to dir: #{mount_dir}")
     end
+  end
 
-    @log.debug("Volume: #{vol_name} mount to dir: #{mount_dir}")
+  expected_mounts.select! { |em| em.to_s.split('/').size > 1 }
+  expected_mounts.map! do |dir|
+    str = ''
+    dir.split('/').reject(&:empty?).map { |path| str += "/#{path}" }
+  end
+  expected_mounts.flatten!.uniq!
+  expected_mounts.each do |mount_dir|
+    next if Dir.exist?(mount_dir)
 
-    unless Dir.exist?(mount_dir)
-      @log.info("Create directory: #{mount_dir} for volume: #{vol_name}")
-      FileUtils.mkdir_p(mount_dir)
-    end
+    @log.info("Create directory: #{mount_dir}")
+    FileUtils.mkdir_p(mount_dir)
+  end
+
+  dirs = options[:mount_dirs].map { |md| Dir.glob(File.join(md.to_s, '*')) }.flatten.uniq
+  dirs.each do |dir|
+    next if expected_mounts.include?(dir) || dir.split('/').size < 1
+
+    @log.info("Delete directory: #{dir}")
+    FileUtils.rm_rf(dir)
   end
 
   sleep(options[:polling_rate] || 10)
