@@ -45,7 +45,7 @@ begin
       options[:chown] = chown
     end
 
-    opts.on('--chmod <perms>', String, 'Set permissions. For example: 0777') do |chmod|
+    opts.on('--chmod <perms>', Integer, 'Set permissions. For example: 0777') do |chmod|
       options[:chmod] = chmod
     end
   end
