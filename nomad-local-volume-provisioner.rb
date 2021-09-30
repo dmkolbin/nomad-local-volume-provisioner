@@ -40,6 +40,14 @@ begin
     opts.on('--main-mount-dir <mount_dir>', String, 'Main mount dir') do |mount_dir|
       options[:mount_dirs] << mount_dir
     end
+
+    opts.on('--chown <user:group>', String, 'Set owner. For example: USER:GROUP') do |chown|
+      options[:chown] = chown
+    end
+
+    opts.on('--chmod <perms>', String, 'Set permissions. For example: 0777') do |chmod|
+      options[:chmod] = chmod
+    end
   end
 
   parser.parse!
@@ -101,6 +109,17 @@ loop do
 
     @log.info("Create directory: #{mount_dir}")
     FileUtils.mkdir_p(mount_dir)
+
+    if options[:chown]
+      user, group = options[:chown].split(':')
+      @log.info("Set owner for dir: #{mount_dir}\nuser: #{user}\ngroup: #{group}")
+      FileUtils.chown(user, group, mount_dir)
+    end
+
+    if options[:chmod]
+      @log.info("Set perms: #{options[:chmod]} for dir: #{mount_dir}")
+      File.chmod(options[:chmod], mount_dir)
+    end
   end
 
   dirs = options[:mount_dirs].map { |md| Dir.glob(File.join(md.to_s, '*')) }.flatten.uniq
